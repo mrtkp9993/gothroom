@@ -25,7 +25,7 @@ const PG = {
 			eSmear: 0,
 			scratch: 0.1,
 			dust: 0.14,
-			aberr: 0.006,
+			aberr: 0,
 		},
 		"Industrial Noir": {
 			desat: 0.96,
@@ -52,7 +52,7 @@ const PG = {
 			eSmear: 0,
 			scratch: 0.18,
 			dust: 0.22,
-			aberr: 0.018,
+			aberr: 0,
 		},
 		"Doom Ritual": {
 			desat: 0.86,
@@ -79,7 +79,7 @@ const PG = {
 			eSmear: 0,
 			scratch: 0.05,
 			dust: 0.09,
-			aberr: 0.009,
+			aberr: 0,
 		},
 		"Void Walker": {
 			desat: 1,
@@ -106,7 +106,7 @@ const PG = {
 			eSmear: 0,
 			scratch: 0.22,
 			dust: 0.32,
-			aberr: 0.022,
+			aberr: 0,
 		},
 		Catacombs: {
 			desat: 0.92,
@@ -133,7 +133,7 @@ const PG = {
 			eSmear: 0,
 			scratch: 0.12,
 			dust: 0.17,
-			aberr: 0.011,
+			aberr: 0,
 		},
 		"Black Mass": {
 			desat: 1,
@@ -160,7 +160,7 @@ const PG = {
 			eSmear: 0.2,
 			scratch: 0.28,
 			dust: 0.38,
-			aberr: 0.025,
+			aberr: 0,
 		},
 	},
 	"PRINT / PRESS": {
@@ -216,7 +216,7 @@ const PG = {
 			eSmear: 0,
 			scratch: 0.09,
 			dust: 0.2,
-			aberr: 0.005,
+			aberr: 0,
 		},
 		"Zine Cut": {
 			desat: 0.9,
@@ -326,7 +326,7 @@ const PG = {
 			eSmear: 0,
 			scratch: 0.04,
 			dust: 0.07,
-			aberr: 0.013,
+			aberr: 0,
 		},
 		"Silver Gelatin": {
 			desat: 0.98,
@@ -353,7 +353,7 @@ const PG = {
 			eSmear: 0,
 			scratch: 0.07,
 			dust: 0.14,
-			aberr: 0.007,
+			aberr: 0,
 		},
 		"War Correspondent": {
 			desat: 0.86,
@@ -380,7 +380,7 @@ const PG = {
 			eSmear: 0,
 			scratch: 0.14,
 			dust: 0.2,
-			aberr: 0.019,
+			aberr: 0,
 		},
 		Séance: {
 			desat: 0.92,
@@ -407,7 +407,7 @@ const PG = {
 			eSmear: 0,
 			scratch: 0.02,
 			dust: 0.04,
-			aberr: 0.027,
+			aberr: 0,
 		},
 		"Tungsten Push": {
 			desat: 0.7,
@@ -434,7 +434,7 @@ const PG = {
 			eSmear: 0,
 			scratch: 0.08,
 			dust: 0.16,
-			aberr: 0.014,
+			aberr: 0,
 		},
 	},
 	"DECAY / TEXTURE": {
@@ -463,7 +463,7 @@ const PG = {
 			eSmear: 0.12,
 			scratch: 0.12,
 			dust: 0.22,
-			aberr: 0.011,
+			aberr: 0,
 		},
 		"Wet Asphalt": {
 			desat: 0.88,
@@ -490,7 +490,7 @@ const PG = {
 			eSmear: 0.1,
 			scratch: 0.07,
 			dust: 0.12,
-			aberr: 0.009,
+			aberr: 0,
 		},
 		Creosote: {
 			desat: 0.75,
@@ -517,7 +517,7 @@ const PG = {
 			eSmear: 0.06,
 			scratch: 0.09,
 			dust: 0.17,
-			aberr: 0.007,
+			aberr: 0,
 		},
 		"Moth & Dust": {
 			desat: 0.6,
@@ -544,7 +544,7 @@ const PG = {
 			eSmear: 0.07,
 			scratch: 0.17,
 			dust: 0.3,
-			aberr: 0.013,
+			aberr: 0,
 		},
 		"Flooded Archive": {
 			desat: 0.78,
@@ -571,7 +571,7 @@ const PG = {
 			eSmear: 0.05,
 			scratch: 0.2,
 			dust: 0.35,
-			aberr: 0.008,
+			aberr: 0,
 		},
 	},
 };
