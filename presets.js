@@ -615,9 +615,6 @@ const SLIDER_GROUPS = [
 	{
 		label: "OPTICS",
 		sl: [
-			{ k: "tiltB", l: "Tilt-Shift", mn: 0, mx: 1, st: 0.01 },
-			{ k: "tiltP", l: "Focus Point", mn: 0, mx: 1, st: 0.01 },
-			{ k: "tiltW", l: "Focus Band", mn: 0.05, mx: 0.7, st: 0.01 },
 			{ k: "eBlur", l: "Edge Blur", mn: 0, mx: 1, st: 0.01 },
 			{ k: "eSmear", l: "Edge Smear", mn: 0, mx: 1, st: 0.01 },
 		],

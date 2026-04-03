@@ -271,29 +271,6 @@ function applyEffect(ctx, w, h) {
 		ctx.putImageData(out2, 0, 0);
 	}
 
-	if (S.tiltB > 0.01) {
-		const sharp = ctx.getImageData(0, 0, w, h).data;
-		const maxR = Math.round(Math.max(w, h) * 0.045 * S.tiltB * 2.5);
-		const blurAll = gBlur(sharp, w, h, maxR);
-		const out3 = ctx.createImageData(w, h);
-		for (let y = 0; y < h; y++) {
-			const yN = y / h,
-				dist = Math.abs(yN - S.tiltP) / (S.tiltW / 2),
-				t = Math.max(0, Math.min(1, (dist - 1) * 2)),
-				sm = t * t;
-			for (let x = 0; x < w; x++) {
-				const i = (y * w + x) * 4;
-				out3.data[i] = sharp[i] * (1 - sm) + blurAll[i] * sm;
-				out3.data[i + 1] =
-					sharp[i + 1] * (1 - sm) + blurAll[i + 1] * sm;
-				out3.data[i + 2] =
-					sharp[i + 2] * (1 - sm) + blurAll[i + 2] * sm;
-				out3.data[i + 3] = 255;
-			}
-		}
-		ctx.putImageData(out3, 0, 0);
-	}
-
 	if (S.eBlur > 0.01 || S.eSmear > 0.01) {
 		const sharp2 = ctx.getImageData(0, 0, w, h).data;
 		const edgeR = Math.round(
