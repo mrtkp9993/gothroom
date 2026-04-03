@@ -656,7 +656,6 @@ function applyPreset(name, preset) {
 		button.className =
 			"preset-btn" + (presetName === name ? " active" : "");
 	});
-	document.getElementById("presetLabel").textContent = name.toUpperCase();
 	scheduleRender();
 }
 
@@ -665,7 +664,6 @@ function clearActivePreset() {
 	document
 		.querySelectorAll(".preset-btn")
 		.forEach((button) => button.classList.remove("active"));
-	document.getElementById("presetLabel").textContent = "CUSTOM";
 }
 
 function switchTab(name, button) {
