@@ -8,7 +8,12 @@ function makePRNG(seed) {
 	};
 }
 
+function randomizeSeed() {
+	rngSeed = Date.now() & 0x7fffffff;
+}
+
 let rngSeed = 42;
+randomizeSeed();
 let S = { ...PG["GOTHIC / DOOM"]["Dead End Kings"] };
 let shadowHex = S.shadowH;
 let highlightHex = S.highlightH;
@@ -222,12 +227,12 @@ function applyEffect(ctx, w, h) {
 			out.data[i + 1] = Math.min(
 				255,
 				base[i + 1] +
-					(blr[i + 1] - (base[i + 1] * blr[i + 1]) / 255) * st,
+				(blr[i + 1] - (base[i + 1] * blr[i + 1]) / 255) * st,
 			);
 			out.data[i + 2] = Math.min(
 				255,
 				base[i + 2] +
-					(blr[i + 2] - (base[i + 2] * blr[i + 2]) / 255) * st,
+				(blr[i + 2] - (base[i + 2] * blr[i + 2]) / 255) * st,
 			);
 			out.data[i + 3] = 255;
 		}
@@ -239,15 +244,15 @@ function applyEffect(ctx, w, h) {
 			bd = new Uint8ClampedArray(w * h * 4);
 		for (let i = 0; i < src2.length; i += 4) {
 			const l =
-					src2[i] * 0.299 + src2[i + 1] * 0.587 + src2[i + 2] * 0.114,
+				src2[i] * 0.299 + src2[i + 1] * 0.587 + src2[i + 2] * 0.114,
 				t = Math.max(0, (l - 155) / 100),
 				v = Math.min(255, l * t);
 			bd[i] = bd[i + 1] = bd[i + 2] = v;
 			bd[i + 3] = 255;
 		}
 		const br2 = Math.round(
-				Math.max(3, Math.min(w, h) * 0.028 * S.bloom * 4),
-			),
+			Math.max(3, Math.min(w, h) * 0.028 * S.bloom * 4),
+		),
 			blr2 = gBlur(bd, w, h, br2);
 		const base2 = ctx.getImageData(0, 0, w, h).data,
 			out2 = ctx.createImageData(w, h);
@@ -300,12 +305,12 @@ function applyEffect(ctx, w, h) {
 							c = 0;
 						for (let k = -sa; k <= sa; k++) {
 							const sx = Math.min(
-									w - 1,
-									Math.max(
-										0,
-										Math.round(x + Math.cos(ang) * k),
-									),
+								w - 1,
+								Math.max(
+									0,
+									Math.round(x + Math.cos(ang) * k),
 								),
+							),
 								sy = Math.min(
 									h - 1,
 									Math.max(
@@ -578,8 +583,8 @@ function buildSliders() {
 						const disp = S[k].toFixed(dec);
 						["d", "m"].forEach((p) => {
 							const valueEl = document.getElementById(
-									p + "v_" + k,
-								),
+								p + "v_" + k,
+							),
 								sliderEl = document.getElementById(
 									p + "s_" + k,
 								);
@@ -671,6 +676,7 @@ function switchBTab(name, button) {
 
 function loadFile(file) {
 	if (!file || !file.type.startsWith("image/")) return;
+	randomizeSeed();
 	const url = URL.createObjectURL(file);
 	const img = new Image();
 	img.onload = () => {
