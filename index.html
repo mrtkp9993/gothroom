@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>gothroom</title>
+  <meta name="description" content="gothroom is a web-based photo filter app that applies a unique blend of vintage and grunge effects to your images, creating a dark and moody aesthetic. With its intuitive interface and customizable presets, gothroom allows you to easily transform your photos into hauntingly beautiful works of art. Whether you're looking to add a touch of nostalgia or create a dramatic atmosphere, gothroom offers a range of tools to help you achieve the perfect look for your images.">
+  <meta name="keywords" content="gothroom, photo filter, vintage, grunge, dark aesthetic, moody photos">
+  <meta name="author" content="Murat Koptur">
+  <meta name="robots" content="index, follow">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="gothroom - Dark & Moody Photo Filter">
+  <meta property="og:description" content="gothroom is a web-based photo filter app that applies a unique blend of vintage and grunge effects to your images, creating a dark and moody aesthetic. With its intuitive interface and customizable presets, gothroom allows you to easily transform your photos into hauntingly beautiful works of art. Whether you're looking to add a touch of nostalgia or create a dramatic atmosphere, gothroom offers a range of tools to help you achieve the perfect look for your images.">
+  <meta property="og:url" content="https://gothroom.muratkoptur.com">
+  <meta property="og:image" content="https://gothroom.muratkoptur.com/logo.webp">
+  <meta property="og:site_name" content="gothroom">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="gothroom - Dark & Moody Photo Filter">
+  <meta name="twitter:description" content="gothroom is a web-based photo filter app that applies a unique blend of vintage and grunge effects to your images, creating a dark and moody aesthetic. With its intuitive interface and customizable presets, gothroom allows you to easily transform your photos into hauntingly beautiful works of art. Whether you're looking to add a touch of nostalgia or create a dramatic atmosphere, gothroom offers a range of tools to help you achieve the perfect look for your images.">
+  <meta name="twitter:image" content="https://gothroom.muratkoptur.com/logo.webp">
+  <link rel="icon" type="image/webp" href="./logo.webp">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div id="app">
+    <header>
+      <img class="logo" src="./logo.webp" alt="Gothroom logo">
+      <span class="title">GOTHROOM</span>
+    </header>
+    <div class="body">
+      <aside>
+        <div class="aside-tabs">
+          <button class="atab active" data-tab-target="presets">Presets</button>
+          <button class="atab" data-tab-target="params">Params</button>
+        </div>
+        <div class="aside-panel" id="panel-presets"><div id="preset-list"></div></div>
+        <div class="aside-panel hidden" id="panel-params"><div id="slider-list"></div></div>
+      </aside>
+      <div class="canvas-area">
+        <div class="toolbar">
+          <label class="file-btn">+ Load Image<input type="file" accept="image/*" id="fileInput" hidden></label>
+          <button class="tbtn" id="origBtn" hidden>Hold: Before</button>
+          <button class="tbtn export" id="dlBtn" hidden>↓ Export</button>
+          <span class="status" id="status" hidden>PROCESSING</span>
+        </div>
+        <div id="canvas-wrap">
+          <div class="drop-zone" id="dropZone">
+            <div class="drop-inner" id="dropInner">
+              <div class="drop-text">Drop image here<br>or click Load Image</div>
+            </div>
+          </div>
+          <canvas id="origDisplayCanvas"></canvas>
+          <canvas id="displayCanvas"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="bottom-bar">
+      <div class="bottom-tabs">
+        <button class="btab active" data-btab-target="bpresets">Presets</button>
+        <button class="btab" data-btab-target="bparams">Params</button>
+      </div>
+      <div class="bottom-panel" id="panel-bpresets"><div class="bpresets" id="bpreset-list"></div></div>
+      <div class="bottom-panel hidden" id="panel-bparams"><div class="bsliders" id="bslider-list"></div></div>
+    </div>
+  </div>
+
+  <script src="./presets.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
