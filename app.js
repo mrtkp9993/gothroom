@@ -381,13 +381,14 @@ function applyEffect(ctx, w, h) {
 
 	if (S.htone > 0.05) {
 		const sp = 6;
+		const htData = ctx.getImageData(0, 0, w, h).data;
 		ctx.save();
 		ctx.globalCompositeOperation = "multiply";
 		ctx.fillStyle = `rgba(0,0,0,${S.htone * 0.92})`;
 		for (let y = 0; y < h; y += sp)
 			for (let x = 0; x < w; x += sp) {
-				const px = ctx.getImageData(x, y, 1, 1).data,
-					br = (px[0] + px[1] + px[2]) / 765,
+				const p = (y * w + x) * 4,
+					br = (htData[p] + htData[p + 1] + htData[p + 2]) / 765,
 					r2 = (1 - br) * (sp * 0.56) * S.htone;
 				if (r2 > 0.25) {
 					ctx.beginPath();
@@ -454,23 +455,29 @@ function scheduleRender() {
 	}, 40);
 }
 
+const PREVIEW_MAX = 1600;
+
+function renderInto(canvas, ctx, w, h) {
+	canvas.width = w;
+	canvas.height = h;
+	ctx.drawImage(srcImg, 0, 0, w, h);
+	applyEffect(ctx, w, h);
+}
+
 function doRender() {
 	if (!srcImg) return;
 	const w = srcImg.naturalWidth,
 		h = srcImg.naturalHeight;
-	fullRes.width = w;
-	fullRes.height = h;
-	frCtx.drawImage(srcImg, 0, 0);
-	applyEffect(frCtx, w, h);
 	const wrap = document.getElementById("canvas-wrap");
 	const mW = wrap.clientWidth || 800,
 		mH = wrap.clientHeight || 600;
-	const sc = Math.min(1, mW / w, mH / h);
-	const dw = Math.round(w * sc),
-		dh = Math.round(h * sc);
+	const sc = Math.min(1, mW / w, mH / h, PREVIEW_MAX / w, PREVIEW_MAX / h);
+	const dw = Math.max(1, Math.round(w * sc)),
+		dh = Math.max(1, Math.round(h * sc));
+	renderInto(fullRes, frCtx, dw, dh);
 	displayCanvas.width = dw;
 	displayCanvas.height = dh;
-	dCtx.drawImage(fullRes, 0, 0, dw, dh);
+	dCtx.drawImage(fullRes, 0, 0);
 }
 
 function buildPresets() {
@@ -707,11 +714,14 @@ function showOrig(showOriginal) {
 }
 
 function doDownload() {
+	if (!srcImg) return;
+	renderInto(fullRes, frCtx, srcImg.naturalWidth, srcImg.naturalHeight);
 	const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
 	const link = document.createElement("a");
 	link.download = `gothroom-${timestamp}.png`;
 	link.href = fullRes.toDataURL("image/png");
 	link.click();
+	doRender();
 }
 
 function bindEvents() {
