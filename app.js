@@ -201,11 +201,6 @@ function applyEffect(ctx, w, h) {
 			g += (hG - g) * hw;
 			b += (hB - b) * hw;
 		}
-		if (S.duo > 0) {
-			r += (sR + (hR - sR) * lumN - r) * S.duo;
-			g += (sG + (hG - sG) * lumN - g) * S.duo;
-			b += (sB + (hB - sB) * lumN - b) * S.duo;
-		}
 		if (S.poster >= 2) {
 			const lv = S.poster - 1,
 				q = (v) =>
@@ -313,27 +308,6 @@ function applyEffect(ctx, w, h) {
 			out2.data[i + 3] = 255;
 		}
 		ctx.putImageData(out2, 0, 0);
-	}
-
-	if (S.tiltB > 0.01) {
-		const sharp = ctx.getImageData(0, 0, w, h).data;
-		const maxR = Math.max(2, Math.round(Math.max(w, h) * 0.05 * S.tiltB * 2));
-		const blurAll = gBlur(sharp, w, h, maxR);
-		const out3 = ctx.createImageData(w, h);
-		const half = Math.max(0.02, S.tiltW / 2);
-		for (let y = 0; y < h; y++) {
-			const dist = Math.abs(y / h - S.tiltP),
-				e = Math.max(0, Math.min(1, (dist - half) / half)),
-				sm = e * e * (3 - 2 * e);
-			for (let x = 0; x < w; x++) {
-				const i = (y * w + x) * 4;
-				out3.data[i] = sharp[i] * (1 - sm) + blurAll[i] * sm;
-				out3.data[i + 1] = sharp[i + 1] * (1 - sm) + blurAll[i + 1] * sm;
-				out3.data[i + 2] = sharp[i + 2] * (1 - sm) + blurAll[i + 2] * sm;
-				out3.data[i + 3] = 255;
-			}
-		}
-		ctx.putImageData(out3, 0, 0);
 	}
 
 	if (S.eBlur > 0.01 || S.eSmear > 0.01) {
