@@ -14,9 +14,10 @@ function randomizeSeed() {
 
 let rngSeed = 42;
 randomizeSeed();
-let S = { ...PG["GOTHIC / DOOM"]["Dead End Kings"] };
+let S = { ...DEFAULTS, ...PG["GOTHIC / DOOM"]["Dead End Kings"] };
 let shadowHex = S.shadowH;
 let highlightHex = S.highlightH;
+let vigHex = S.vigH;
 let activePreset = "Dead End Kings";
 let srcImg = null;
 let renderTimer = null;
@@ -157,6 +158,15 @@ function applyEffect(ctx, w, h) {
 		r = r * S.cont - cf;
 		g = g * S.cont - cf;
 		b = b * S.cont - cf;
+		if (S.lift !== 0 || S.gamma !== 1 || S.gain !== 1) {
+			const tc = (v) => {
+				const t = (v / 255) * (1 - S.lift) + S.lift;
+				return Math.pow(Math.max(0, t), 1 / S.gamma) * S.gain * 255;
+			};
+			r = tc(r);
+			g = tc(g);
+			b = tc(b);
+		}
 		if (S.crush > 0) {
 			const crush = (v) =>
 				Math.pow(Math.max(0, v / 255), 1 + S.crush * 1.5) * 255;
@@ -191,6 +201,21 @@ function applyEffect(ctx, w, h) {
 			g += (hG - g) * hw;
 			b += (hB - b) * hw;
 		}
+		if (S.duo > 0) {
+			r += (sR + (hR - sR) * lumN - r) * S.duo;
+			g += (sG + (hG - sG) * lumN - g) * S.duo;
+			b += (sB + (hB - sB) * lumN - b) * S.duo;
+		}
+		if (S.poster >= 2) {
+			const lv = S.poster - 1,
+				q = (v) =>
+					(Math.round((Math.max(0, Math.min(255, v)) / 255) * lv) /
+						lv) *
+					255;
+			r = q(r);
+			g = q(g);
+			b = q(b);
+		}
 		if (S.grain > 0) {
 			const n = (rng() - 0.5) * S.grain * 130;
 			r += n;
@@ -202,6 +227,20 @@ function applyEffect(ctx, w, h) {
 		d[i + 2] = Math.max(0, Math.min(255, b));
 	}
 	ctx.putImageData(id, 0, 0);
+
+	if (S.sharp > 0.01) {
+		const sd = ctx.getImageData(0, 0, w, h),
+			sp = sd.data,
+			blurR = Math.max(1, Math.round(Math.min(w, h) * 0.004) + 1),
+			blr = gBlur(sp, w, h, blurR),
+			amt = S.sharp * 1.2;
+		for (let i = 0; i < sp.length; i += 4) {
+			sp[i] = sp[i] + (sp[i] - blr[i]) * amt;
+			sp[i + 1] = sp[i + 1] + (sp[i + 1] - blr[i + 1]) * amt;
+			sp[i + 2] = sp[i + 2] + (sp[i + 2] - blr[i + 2]) * amt;
+		}
+		ctx.putImageData(sd, 0, 0);
+	}
 
 	if (S.hal > 0.01) {
 		const src = ctx.getImageData(0, 0, w, h).data,
@@ -276,6 +315,27 @@ function applyEffect(ctx, w, h) {
 		ctx.putImageData(out2, 0, 0);
 	}
 
+	if (S.tiltB > 0.01) {
+		const sharp = ctx.getImageData(0, 0, w, h).data;
+		const maxR = Math.max(2, Math.round(Math.max(w, h) * 0.05 * S.tiltB * 2));
+		const blurAll = gBlur(sharp, w, h, maxR);
+		const out3 = ctx.createImageData(w, h);
+		const half = Math.max(0.02, S.tiltW / 2);
+		for (let y = 0; y < h; y++) {
+			const dist = Math.abs(y / h - S.tiltP),
+				e = Math.max(0, Math.min(1, (dist - half) / half)),
+				sm = e * e * (3 - 2 * e);
+			for (let x = 0; x < w; x++) {
+				const i = (y * w + x) * 4;
+				out3.data[i] = sharp[i] * (1 - sm) + blurAll[i] * sm;
+				out3.data[i + 1] = sharp[i + 1] * (1 - sm) + blurAll[i + 1] * sm;
+				out3.data[i + 2] = sharp[i + 2] * (1 - sm) + blurAll[i + 2] * sm;
+				out3.data[i + 3] = 255;
+			}
+		}
+		ctx.putImageData(out3, 0, 0);
+	}
+
 	if (S.eBlur > 0.01 || S.eSmear > 0.01) {
 		const sharp2 = ctx.getImageData(0, 0, w, h).data;
 		const edgeR = Math.round(
@@ -336,6 +396,31 @@ function applyEffect(ctx, w, h) {
 				out4.data[i + 3] = 255;
 			}
 		ctx.putImageData(out4, 0, 0);
+	}
+
+	if (Math.abs(S.lens) > 0.01) {
+		const src = ctx.getImageData(0, 0, w, h).data,
+			out = ctx.createImageData(w, h),
+			od = out.data,
+			cx = w / 2,
+			cy = h / 2,
+			maxR = Math.sqrt(cx * cx + cy * cy),
+			k = S.lens;
+		for (let y = 0; y < h; y++)
+			for (let x = 0; x < w; x++) {
+				const dx = (x - cx) / maxR,
+					dy = (y - cy) / maxR,
+					f = 1 + k * (dx * dx + dy * dy),
+					sx = Math.min(w - 1, Math.max(0, Math.round(cx + dx * maxR * f))),
+					sy = Math.min(h - 1, Math.max(0, Math.round(cy + dy * maxR * f))),
+					o = (y * w + x) * 4,
+					s = (sy * w + sx) * 4;
+				od[o] = src[s];
+				od[o + 1] = src[s + 1];
+				od[o + 2] = src[s + 2];
+				od[o + 3] = 255;
+			}
+		ctx.putImageData(out, 0, 0);
 	}
 
 	if (S.scratch > 0.005) {
@@ -400,16 +485,19 @@ function applyEffect(ctx, w, h) {
 	}
 
 	if (S.vig > 0) {
+		const [vR, vG, vB] = h2rgb(vigHex),
+			vx = w / 2 + S.vigX * w * 0.5,
+			vy = h / 2 + S.vigY * h * 0.5;
 		const grad = ctx.createRadialGradient(
-			w / 2,
-			h / 2,
+			vx,
+			vy,
 			Math.min(w, h) * 0.22,
-			w / 2,
-			h / 2,
+			vx,
+			vy,
 			Math.max(w, h) * 0.88,
 		);
-		grad.addColorStop(0, "rgba(0,0,0,0)");
-		grad.addColorStop(1, `rgba(0,0,0,${S.vig})`);
+		grad.addColorStop(0, `rgba(${vR},${vG},${vB},0)`);
+		grad.addColorStop(1, `rgba(${vR},${vG},${vB},${S.vig})`);
 		ctx.save();
 		ctx.globalCompositeOperation = "multiply";
 		ctx.fillStyle = grad;
@@ -441,6 +529,45 @@ function applyEffect(ctx, w, h) {
 			);
 			ctx.fill();
 		}
+		ctx.restore();
+	}
+
+	if (S.leak > 0.01) {
+		const rngL = makePRNG(rngSeed + 4),
+			numL = 1 + Math.floor(rngL() * 2);
+		ctx.save();
+		ctx.globalCompositeOperation = "screen";
+		for (let k = 0; k < numL; k++) {
+			let lx, ly;
+			if (rngL() < 0.5) {
+				lx = rngL() < 0.5 ? 0 : w;
+				ly = rngL() * h;
+			} else {
+				lx = rngL() * w;
+				ly = rngL() < 0.5 ? 0 : h;
+			}
+			const lr = Math.min(w, h) * (0.4 + rngL() * 0.5),
+				warm = rngL() < 0.65,
+				cR = 255,
+				cG = warm ? (120 + rngL() * 80) | 0 : 70,
+				cB = warm ? 40 : (90 + rngL() * 110) | 0,
+				a = S.leak * (0.5 + rngL() * 0.4),
+				gg = ctx.createRadialGradient(lx, ly, 0, lx, ly, lr);
+			gg.addColorStop(0, `rgba(${cR},${cG},${cB},${a})`);
+			gg.addColorStop(1, `rgba(${cR},${cG},${cB},0)`);
+			ctx.fillStyle = gg;
+			ctx.fillRect(0, 0, w, h);
+		}
+		ctx.restore();
+	}
+
+	if (S.scan > 0.01) {
+		const gap = Math.max(2, Math.round(h / 540) * 2);
+		ctx.save();
+		ctx.globalCompositeOperation = "multiply";
+		ctx.fillStyle = `rgba(0,0,0,${S.scan * 0.5})`;
+		for (let y = 0; y < h; y += gap)
+			ctx.fillRect(0, y, w, Math.max(1, gap / 2));
 		ctx.restore();
 	}
 }
@@ -577,6 +704,23 @@ function buildSliders() {
 				);
 				el.appendChild(tonePair);
 			}
+			if (label === "VIGNETTE") {
+				const tonePair = document.createElement("div");
+				tonePair.className = "tone-pair";
+				buildColorPicker(
+					tonePair,
+					prefix,
+					"vig",
+					"Color",
+					vigHex,
+					(value) => {
+						vigHex = value;
+						clearActivePreset();
+						scheduleRender();
+					},
+				);
+				el.appendChild(tonePair);
+			}
 			sl.forEach(({ k, l, mn, mx, st }) => {
 				const val = S[k] ?? 0,
 					dec = st < 0.01 ? 3 : st < 1 ? 2 : 0;
@@ -632,13 +776,20 @@ function syncSliders() {
 		const hex = el.parentElement.nextSibling;
 		if (hex) hex.textContent = highlightHex;
 	});
+	document.querySelectorAll('[id$="_vigColor"]').forEach((el) => {
+		el.value = vigHex;
+		el.parentElement.style.background = vigHex;
+		const hex = el.parentElement.nextSibling;
+		if (hex) hex.textContent = vigHex;
+	});
 }
 
 function applyPreset(name, preset) {
 	activePreset = name;
-	S = { ...preset };
-	shadowHex = preset.shadowH || "#120800";
-	highlightHex = preset.highlightH || "#c0a870";
+	S = { ...DEFAULTS, ...preset };
+	shadowHex = S.shadowH;
+	highlightHex = S.highlightH;
+	vigHex = S.vigH;
 	syncSliders();
 	document.querySelectorAll(".preset-btn").forEach((button) => {
 		const presetName = button.id.replace(/[dm]_p_/, "");
